@@ -40,6 +40,7 @@ export async function activate(context: vscode.ExtensionContext) {
     }
 
     // create TestController for VUnit
-    const controller = vscode.tests.createTestController('example-test-adapter', 'Example Test Controller');
+    const controller = vscode.tests.createTestController('vunit-test-controller', 'VUnit TestController');
 	context.subscriptions.push(controller);
+    
 }
