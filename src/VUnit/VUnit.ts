@@ -37,7 +37,7 @@ export class VUnit {
 	//Public Methods
 	//--------------------------------------------
     public constructor() {
-        this.mOutputChannel = vscode.window.createOutputChannel("VUnit");
+        this.mOutputChannel = vscode.window.createOutputChannel("VUnitByHGB.VUnit");
     }
 
     public async GetVunitVersion(): Promise<string> {
@@ -78,7 +78,7 @@ export class VUnit {
         });
         return runPy;
     }
-    
+
     public async RunVunit(
         vunitArgs: string[],
         vunitProcess: (vunit: ChildProcess) => void = () => {}
