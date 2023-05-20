@@ -172,7 +172,7 @@ export class VunitTestController {
             }
             else if (request.profile?.kind === vscode.TestRunProfileKind.Debug)
             {
-                this.RunVunitTestGUI(node, run);
+                await this.RunVunitTestGUI(node, run);
             }
 
         }
