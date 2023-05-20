@@ -27,8 +27,6 @@ export class VunitTestController {
     private mWorkSpacePath : string = "";
     private mVunit : VUnit;
 
-    private mVunitProcess! : any;
-
     //--------------------------------------------
 	//Public Methods
 	//--------------------------------------------
@@ -73,7 +71,7 @@ export class VunitTestController {
             await Promise.all(mapTestItems(this.mTestController.items, t => this.runNode(t, request, run)));
         }
     
-        run.end();
+        //run.end();
     }
 
     public async LoadTests()
@@ -167,11 +165,11 @@ export class VunitTestController {
         {
             if (request.profile?.kind === vscode.TestRunProfileKind.Run)
             {
-                await this.RunVunitTestDefault(node, run);
+                this.RunVunitTestDefault(node, run);
             }
             else if (request.profile?.kind === vscode.TestRunProfileKind.Debug)
             {
-                await this.RunVunitTestGUI(node, run);
+                this.RunVunitTestGUI(node, run);
             }
 
         }
@@ -255,7 +253,6 @@ export class VunitTestController {
 //--------------------------------------------
 //Helper Methods
 //--------------------------------------------
-
 
 // Small helper that works like "array.map" for children of a test collection
 const mapTestItems = <T>(items: vscode.TestItemCollection, mapper: (t: vscode.TestItem) => T): T[] => {
