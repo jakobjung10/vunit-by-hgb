@@ -175,9 +175,6 @@ export class VunitTestController {
                 this.RunVunitTestGUI(node, run);
             }
 
-
-            
-
         }
     }
 
