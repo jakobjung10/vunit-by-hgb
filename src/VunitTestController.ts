@@ -1,6 +1,5 @@
 //specific imports
 import { VUnit } from "./VUnit/VUnit";
-import * as vunit from "./vunit";
 import { VunitExportData } from "./VUnit/VUnitPackage";
 
 //general imports
@@ -43,7 +42,7 @@ export class VunitTestController {
         this.mVunit = new VUnit();
 
         //get workspace-path of extension
-        const workSpacePath = vunit.getWorkspaceRoot();
+        const workSpacePath = this.mVunit.GetWorkspaceRoot(); 
         if(workSpacePath) { this.mWorkSpacePath = workSpacePath; }
 
         // create TestController for VUnit
@@ -196,10 +195,12 @@ export class VunitTestController {
         run.started(node);
 
         //variable for referencing output from vunit-process to analyse its output
-        let vunitProcess : any = vunit;
+        let vunitProcess : any;
 
         //launch vunit-process with given arguments from above
         await this.mVunit.RunVunit(options, (vunit: ChildProcess) => {
+
+            vunitProcess = vunit;
 
             //this.mVunitProcess = vunit;
             const testStart = /Starting (.*)/;

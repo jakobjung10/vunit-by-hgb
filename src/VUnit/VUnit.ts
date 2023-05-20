@@ -85,7 +85,7 @@ export class VUnit {
     ): Promise<string> {
         const runPy = await this.GetRunPy();
         return new Promise((resolve, reject) => {
-            if (!getWorkspaceRoot()) {
+            if (!this.GetWorkspaceRoot()) {
                 return reject(new Error('Workspace root not defined.'));
             } else if (!runPy) {
                 return reject(
@@ -184,17 +184,17 @@ export class VUnit {
         return vunitData;
     }
 
+    public GetWorkspaceRoot(): string | undefined {
+        const workspaceFolder = (vscode.workspace.workspaceFolders || [])[0];
+        let wsRoot: string | undefined = undefined;
+        if (workspaceFolder) {
+            wsRoot = workspaceFolder.uri.fsPath;
+        }
+        return wsRoot;
+    }
 
 }
 
 //--------------------------------------------
 //Helper-Functions
 //--------------------------------------------
-export function getWorkspaceRoot(): string | undefined {
-    const workspaceFolder = (vscode.workspace.workspaceFolders || [])[0];
-    let wsRoot: string | undefined = undefined;
-    if (workspaceFolder) {
-        wsRoot = workspaceFolder.uri.fsPath;
-    }
-    return wsRoot;
-}
