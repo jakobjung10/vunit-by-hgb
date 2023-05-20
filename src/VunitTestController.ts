@@ -162,13 +162,13 @@ export class VunitTestController {
         if (node.children.size > 0) 
         {
             // recurse and run all children if this is a "suite"
-            await Promise.all(mapTestItems(node.children, t => this.runNode(t, request, run)));
+            Promise.all(mapTestItems(node.children, t => this.runNode(t, request, run)));
         }
         else
         {
             if (request.profile?.kind === vscode.TestRunProfileKind.Run)
             {
-                this.RunVunitTestDefault(node, run);
+                await this.RunVunitTestDefault(node, run);
             }
             else if (request.profile?.kind === vscode.TestRunProfileKind.Debug)
             {
@@ -195,14 +195,18 @@ export class VunitTestController {
         //signal for start of test-case in User-Interface
         run.started(node);
 
+        //variable for referencing output from vunit-process to analyse its output
+        let vunitProcess : any = vunit;
+
         //launch vunit-process with given arguments from above
         await this.mVunit.RunVunit(options, (vunit: ChildProcess) => {
-            this.mVunitProcess = vunit;
+
+            //this.mVunitProcess = vunit;
             const testStart = /Starting (.*)/;
             const testEnd = /(pass|fail) \(.*\) (.*) \(.*\)/;
             readline
                 .createInterface({
-                    input: this.mVunitProcess.stdout,
+                    input: vunitProcess.stdout,
                     terminal: false,
                 })
                 .on('line', (line: string) => {
@@ -221,8 +225,9 @@ export class VunitTestController {
                     }
                 });
         }).finally(() => {
-            this.mVunitProcess = null;
+            vunitProcess = 0;
         });
+
     }
 
     private async RunVunitTestGUI(node: vscode.TestItem, run: vscode.TestRun)
