@@ -44,7 +44,8 @@ export class VunitTestController {
         const workSpacePath = this.mVunit.GetWorkspaceRoot(); 
         if(workSpacePath) { this.mWorkSpacePath = workSpacePath; }
         // watch folder of extension
-        this.mFolderWatcher = vscode.workspace.createFileSystemWatcher(this.mWorkSpacePath);
+        const testPath = path.join(this.mWorkSpacePath, "*");
+        this.mFolderWatcher = vscode.workspace.createFileSystemWatcher(path.join(this.mWorkSpacePath, "*"));
         
         //handle events for FolderWatcher
         this.mFolderWatcher.onDidCreate( (uri) => {
@@ -81,9 +82,9 @@ export class VunitTestController {
         //create profile for debugging tests
         this.mDebugProfile = this.mTestController.createRunProfile('Debug', vscode.TestRunProfileKind.Debug, request => this.RunTests(request), true);
 
-        // this.mTestController.resolveHandler = load => {
-        //     this.LoadTests();
-        // };
+        this.mTestController.resolveHandler = load => {
+            this.LoadTests();
+        };
     }
 
     public async RunTests(request : vscode.TestRunRequest)
