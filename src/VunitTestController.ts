@@ -208,7 +208,8 @@ export class VunitTestController {
     private async RunVunitTestDefault(node: vscode.TestItem, run: vscode.TestRun)
     {
         //extract run.py path
-        const runPyPath = node.id.split('|')[0];
+        const runPyPathRelative = node.id.split('|')[0];
+        const runPyPath = path.join(this.mWorkSpacePath, runPyPathRelative);
         //Extract testcase-name from testcase-ID
         const testCaseWildCard : string = '"' + node.id.split('|')[1] + '"';
         //Command-Line-Arguments for VUnit
@@ -257,6 +258,10 @@ export class VunitTestController {
                 });
         }).finally(() => {
             vunitProcess = 0;
+        })
+        .catch((err) => {
+            const message : vscode.TestMessage = new vscode.TestMessage("failed");
+            run.failed(node, message);
         });
 
     }
@@ -267,7 +272,8 @@ export class VunitTestController {
         run.started(node);
 
         //extract run.py path
-        const runPyPath = node.id.split('|')[0];
+        const runPyPathRelative = node.id.split('|')[0];
+        const runPyPath = path.join(this.mWorkSpacePath, runPyPathRelative);
         //Command-Line-Arguments for VUnit
         const testCaseWildCard : string = '"' + node.id.split('|')[1] + '"';
         let options = [testCaseWildCard, '--no-color', '--exit-0', '-g'];
