@@ -124,7 +124,7 @@ export class VunitTestController {
         for(const RunPy of RunPyFiles)
         {
             // get data for each run.py-file
-            const exportData: VunitExportData = await this.mVunit.GetVunitData(RunPy ,this.mWorkSpacePath);
+            const exportData: VunitExportData = await this.mVunit.GetVunitData(this.mWorkSpacePath, RunPy);
 
             //relative path from workspace-folder to run-py-file 
             const RunPyPath : string = path.relative(this.mWorkSpacePath, RunPy);
