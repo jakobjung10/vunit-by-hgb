@@ -90,13 +90,33 @@ export class VunitTestController {
     public async RunTests(request : vscode.TestRunRequest)
     {
         //this.mTestController.items.replace(vunit.loadVunitTests(this.mWorkSpacePath))
-
         const run : vscode.TestRun = this.mTestController.createTestRun(request);
 
         if (request.include) {
             await Promise.all(request.include.map(t => this.runNode(t, request, run)));
+
+            if (request.profile?.kind === vscode.TestRunProfileKind.Run)
+            {
+                //this.RunVunitTestsDefault(request, run);
+            }
+            else if (request.profile?.kind === vscode.TestRunProfileKind.Debug)
+            {
+                //this.RunVunitTestsGUI(node, run);
+            }
+
         } else {
             await Promise.all(mapTestItems(this.mTestController.items, t => this.runNode(t, request, run)));
+
+            //TODO: execute all run.py scripts
+            
+            if (request.profile?.kind === vscode.TestRunProfileKind.Run)
+            {
+                //this.RunVunitTestsDefault(request, run);
+            }
+            else if (request.profile?.kind === vscode.TestRunProfileKind.Debug)
+            {
+                //this.RunVunitTestsGUI(node, run);
+            }
         }
     
         //run.end();
@@ -143,7 +163,7 @@ export class VunitTestController {
                 let testCaseName = split.slice(2).join('.');
 
                 // get item of library
-                const libraryID = RunPyPath.concat("|", libraryName);
+                const libraryID = RunPy.concat("|", libraryName);
                 let libraryItem : vscode.TestItem | undefined = runPyItem.children.get(libraryID);
 
                 // create node for library if not existing yet
@@ -154,7 +174,7 @@ export class VunitTestController {
                 }
 
                 // get item of testbench
-                const testBenchID = RunPyPath.concat("|", testBenchName);
+                const testBenchID = RunPy.concat("|", testBenchName);
                 let testBenchItem : vscode.TestItem | undefined = libraryItem.children.get(testBenchID);
                 
                 //create node for testbench if not existing yet
@@ -165,7 +185,7 @@ export class VunitTestController {
                 }
 
                 //create node for testcase
-                const testCaseID = RunPyPath.concat("|", testcase.name);
+                const testCaseID = RunPy.concat("|", testcase.name);
                 const testCaseItem : vscode.TestItem = this.mTestController.createTestItem(testCaseID, testCaseName);
                 testBenchItem.children.add(testCaseItem);
 
@@ -193,25 +213,23 @@ export class VunitTestController {
         }
         else
         {
-            if (request.profile?.kind === vscode.TestRunProfileKind.Run)
-            {
-                this.RunVunitTestDefault(node, run);
-            }
-            else if (request.profile?.kind === vscode.TestRunProfileKind.Debug)
-            {
-                this.RunVunitTestGUI(node, run);
-            }
-
+            run.started(node);
         }
     }
 
-    private async RunVunitTestDefault(node: vscode.TestItem, run: vscode.TestRun)
+    private async RunVunitTestsDefault(request : vscode.TestRunRequest, node : vscode.TestItem, run: vscode.TestRun)
     {
+
         //extract run.py path
-        const runPyPathRelative = node.id.split('|')[0];
-        const runPyPath = path.join(this.mWorkSpacePath, runPyPathRelative);
+        const runPyPath = node.id.split('|')[0];
+        //wildcard-appendix
+        let wildcardAppendix : string = "";
+        if(node.children.size === 0)
+        {
+            wildcardAppendix = ".*";
+        }
         //Extract testcase-name from testcase-ID
-        const testCaseWildCard : string = '"' + node.id.split('|')[1] + '"';
+        const testCaseWildCard : string = '"' + node.id.split('|')[1] + wildcardAppendix + '"';
         //Command-Line-Arguments for VUnit
         let options = [testCaseWildCard, '--no-color', '--exit-0'];
 
@@ -221,9 +239,6 @@ export class VunitTestController {
         if (vunitOptions) {
             options.push(vunitOptions as string);
         }   
-
-        //signal for start of test-case in User-Interface
-        run.started(node);
 
         //variable for referencing output from vunit-process to analyse its output
         let vunitProcess : any;
@@ -266,14 +281,13 @@ export class VunitTestController {
 
     }
 
-    private async RunVunitTestGUI(node: vscode.TestItem, run: vscode.TestRun)
+    private async RunVunitTestsGUI(node: vscode.TestItem, run: vscode.TestRun)
     {
         //signal for start of test-case in User-Interface
         run.started(node);
 
         //extract run.py path
-        const runPyPathRelative = node.id.split('|')[0];
-        const runPyPath = path.join(this.mWorkSpacePath, runPyPathRelative);
+        const runPyPath = node.id.split('|')[0];
         //Command-Line-Arguments for VUnit
         const testCaseWildCard : string = '"' + node.id.split('|')[1] + '"';
         let options = [testCaseWildCard, '--no-color', '--exit-0', '-g'];
