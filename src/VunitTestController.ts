@@ -24,6 +24,7 @@ export class VunitTestController {
     private mContext : vscode.ExtensionContext;
     private mOutputChannel : vscode.OutputChannel;
     private mFolderWatcher : vscode.FileSystemWatcher;
+    private mDiagnosticCollection : vscode.DiagnosticCollection;
 
     //specific members
     private mTestController : vscode.TestController;
@@ -41,6 +42,7 @@ export class VunitTestController {
         //initialize vs-code-members
         this.mContext = context;
         this.mOutputChannel = vscode.window.createOutputChannel("VUnitByHGB.VUnitTestController");
+        this.mDiagnosticCollection = vscode.languages.createDiagnosticCollection('VUnitByHGB.vunitErrors');
 
         //initialize specific members
         this.mVunit = new VUnit();
@@ -86,6 +88,11 @@ export class VunitTestController {
 
         //create profile for debugging tests
         this.mDebugProfile = this.mTestController.createRunProfile('Debug', vscode.TestRunProfileKind.Debug, request => this.RunTests(request), true);
+
+        //resolve-handler for initial loading of testcases in User-Interface
+        this.mTestController.resolveHandler = load => {
+            this.LoadTests();
+        };
 
         //refresh-handler for manual refreshing of testcases in User-Interface
         this.mTestController.refreshHandler = load => {
@@ -266,6 +273,9 @@ export class VunitTestController {
 
     private async RunVunitTestsDefault(node : vscode.TestItem, run: vscode.TestRun) : Promise<void>
     {
+        //clear all contributions to Problems-Window
+        this.mDiagnosticCollection.clear();
+
         //extract run.py path
         const runPyPath = node.id.split('|')[0];
         //wildcard-appendix
@@ -320,8 +330,6 @@ export class VunitTestController {
                     let result = testEnd.exec(line);
                     if (result) {
 
-                        const message : vscode.TestMessage = new vscode.TestMessage("failed");
-
                         //evaluate result
                         if(result[1] === 'pass')
                         {
@@ -345,7 +353,10 @@ export class VunitTestController {
                     }
 
                     //match VUnit-Errors
-                    this.mVunit.MatchProblems(line);
+                    if(vscode.workspace.getConfiguration().get('vunit.matchProblems'))
+                    {
+                        this.mVunit.MatchProblems(line, this.mDiagnosticCollection); 
+                    }
 
                 });
         }).finally(() => {
