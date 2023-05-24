@@ -214,7 +214,7 @@ export class VUnit {
         return wsRoot;
     }
 
-    public MatchProblems(line : string, diagnosticCollection : vscode.DiagnosticCollection)
+    public MatchProblems(line : string, diagnosticCollection : vscode.DiagnosticCollection) : void
     {   
         const match = cVunitProblemMatcher.exec(line);
         if (match) {
