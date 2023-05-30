@@ -1,8 +1,19 @@
-# VUnit Test Explorer (preview)
+# VUnit Test Controller (preview)
 
 Run your [VUnit](https://vunit.github.io/) tests from the Sidebar of Visual Studio Code.
 
 ![UI example](/img/screenshot.png?raw=true)
+
+# Features
+
+- Listing all VUnit-Testcases
+- Running VUnit-Testcases
+- Debug VUnit-Testcase in GUI
+- Go-To-Source
+- Go-To-Testcase
+- Highlight failed/passed tests
+- Highlight failed assertions
+- Multiple run.py supported
 
 # Configuration
 
@@ -24,8 +35,21 @@ The following commands are available in VS Code's command palette, use the ID to
 ID                                   | Command
 -------------------------------------|--------------------------------------------
 
+# Credits
+[VUnit Test Explorer](https://github.com/Bochlin/vunit-test-explorer)
+
+Fork of VUnit Test Explorer by Henrik Bohlin, since the original project is no longer maintained.
+
+Differences:
+---
+- Ported to official VS-Code-Testing-API
+- Multiple run.py
+- IDE-Features (errors)
 
 # Dependencies
 
-This extension uses the [Testing API from Visual Studio Code].
+This extension uses the [Testing API from Visual Studio Code](https://code.visualstudio.com/api/extension-guides/testing).
+
+# License
+
 This extension is published under the GNU GPL license.
