@@ -15,6 +15,12 @@ Run your [VUnit](https://vunit.github.io/) tests from the Sidebar of Visual Stud
 - Highlight failed assertions
 - Multiple run.py supported
 
+# Usage
+
+1. Open a folder that contains a HDL-Project and a run.py
+2. Open the Testing-SideViewContainer on the left menu bar
+3. All Testcases should be displayed
+
 # Configuration
 
 The following configuration properties are available:
